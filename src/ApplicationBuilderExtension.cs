@@ -39,13 +39,4 @@ public static class ApplicationBuilderExtension
         app.UseAuthentication();
         app.UseAuthorization();
     }
-
-    /// <summary>
-    /// Adds the configured CORS policy to the request pipeline.
-    /// </summary>
-    /// <param name="app">The application builder used to configure the request pipeline.</param>
-    public static void UseCorsPolicy(this IApplicationBuilder app)
-    {
-        app.UseCors();
-    }
 }
