@@ -40,7 +40,16 @@ public static class ApplicationBuilderExtension
         app.UseAuthorization();
     }
 
-    public static void AddDeveloperExceptionPage(IApplicationBuilder app, IConfiguration configuration)
+    /// <summary>
+    /// Conditionally adds the ASP.NET Core Developer Exception Page middleware based on configuration.
+    /// </summary>
+    /// <param name="app">The application builder used to configure the request pipeline.</param>
+    /// <param name="configuration">The application configuration used to retrieve the setting.</param>
+    /// <remarks>
+    /// Checks the <c>DeveloperExceptionPage</c> configuration key. If it is set to <c>true</c>, 
+    /// the <see cref="Microsoft.AspNetCore.Builder.DeveloperExceptionPageExtensions.UseDeveloperExceptionPage"/> middleware is added.
+    /// </remarks>
+    public static void AddDeveloperExceptionPage(this IApplicationBuilder app, IConfiguration configuration)
     {
         var enabled = configuration.GetValue<bool>("DeveloperExceptionPage");
 
