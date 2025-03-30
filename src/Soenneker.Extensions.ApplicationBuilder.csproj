@@ -43,11 +43,11 @@
 
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.App" />
-        <PackageReference Include="Soenneker.Enums.DeployEnvironment" Version="3.0.168" />
+        <FrameworkReference Include="Microsoft.AspNetCore.App" />
     </ItemGroup>
-
+    
     <ItemGroup>
+      <PackageReference Include="Soenneker.Enums.DeployEnvironment" Version="3.0.168" />
       <PackageReference Include="Soenneker.Extensions.Configuration" Version="3.0.656" />
     </ItemGroup>
 </Project>
