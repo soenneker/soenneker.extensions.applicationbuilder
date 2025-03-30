@@ -39,4 +39,12 @@ public static class ApplicationBuilderExtension
         app.UseAuthentication();
         app.UseAuthorization();
     }
+
+    public static void AddDeveloperExceptionPage(IApplicationBuilder app, IConfiguration configuration)
+    {
+        var enabled = configuration.GetValue<bool>("DeveloperExceptionPage");
+
+        if (enabled)
+            app.UseDeveloperExceptionPage();
+    }
 }
