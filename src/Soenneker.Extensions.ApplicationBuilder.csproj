@@ -48,6 +48,6 @@
     
     <ItemGroup>
       <PackageReference Include="Soenneker.Enums.DeployEnvironment" Version="3.0.176" />
-      <PackageReference Include="Soenneker.Extensions.Configuration" Version="3.0.701" />
+      <PackageReference Include="Soenneker.Extensions.Configuration" Version="3.0.703" />
     </ItemGroup>
 </Project>
