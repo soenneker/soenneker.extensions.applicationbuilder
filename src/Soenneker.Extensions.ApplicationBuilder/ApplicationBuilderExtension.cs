@@ -41,19 +41,24 @@ public static class ApplicationBuilderExtension
     }
 
     /// <summary>
-    /// Conditionally adds the ASP.NET Core Developer Exception Page middleware based on configuration.
+    /// Adds the ASP.NET Core Developer Exception Page middleware when explicitly enabled in a local or development environment.
     /// </summary>
     /// <param name="app">The application builder used to configure the request pipeline.</param>
     /// <param name="configuration">The application configuration used to retrieve the setting.</param>
     /// <remarks>
-    /// Checks the <c>DeveloperExceptionPage</c> configuration key. If it is set to <c>true</c>, 
-    /// the <see cref="Microsoft.AspNetCore.Builder.DeveloperExceptionPageExtensions.UseDeveloperExceptionPage"/> middleware is added.
+    /// Checks the <c>DeveloperExceptionPage</c> and <c>Environment</c> configuration keys. The middleware is added only when the flag is
+    /// <see langword="true"/> and the environment is <see cref="DeployEnvironment.Local"/> or <see cref="DeployEnvironment.Development"/>.
     /// </remarks>
     public static void AddDeveloperExceptionPage(this IApplicationBuilder app, IConfiguration configuration)
     {
         var enabled = configuration.GetValue<bool>("DeveloperExceptionPage");
 
-        if (enabled)
+        if (!enabled)
+            return;
+
+        DeployEnvironment deployEnvironment = DeployEnvironment.FromValue(configuration.GetValueStrict<string>("Environment"));
+
+        if (deployEnvironment == DeployEnvironment.Local || deployEnvironment == DeployEnvironment.Development)
             app.UseDeveloperExceptionPage();
     }
 }

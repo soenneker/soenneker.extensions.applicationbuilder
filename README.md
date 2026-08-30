@@ -5,7 +5,7 @@
 
 # ![](https://user-images.githubusercontent.com/4441470/224455560-91ed3ee7-f510-4041-a8d2-3fc093025112.png) Soenneker.Extensions.ApplicationBuilder
 
-A collection of helpful IApplicationBuilder extension methods.
+Focused ASP.NET Core pipeline helpers for HTTPS/HSTS, authentication and authorization, and a safely gated developer exception page.
 
 ## Installation
 
@@ -13,17 +13,39 @@ A collection of helpful IApplicationBuilder extension methods.
 dotnet add package Soenneker.Extensions.ApplicationBuilder
 ```
 
-## Quick start
+## Configuration
+
+The environment-aware helpers read the package-specific `Environment` key. Its value must exactly match a `DeployEnvironment` value such as `Local`, `Test`, `Development`, `Staging`, or `Production`.
+
+```json
+{
+  "Environment": "Local",
+  "DeveloperExceptionPage": true
+}
+```
+
+This key is independent of `ASPNETCORE_ENVIRONMENT` and `DOTNET_ENVIRONMENT`; map or populate it explicitly. A missing or unknown `Environment` value causes an environment-aware helper to fail rather than silently choosing a security posture.
+
+## Pipeline usage
 
 ```csharp
 using Soenneker.Extensions.ApplicationBuilder;
 
-// Given an existing IApplicationBuilder named app:
-app.ConfigureHstsAndRedirection(configuration);
+WebApplication app = builder.Build();
+
+// Place exception handling early so it can observe downstream failures.
+app.AddDeveloperExceptionPage(app.Configuration);
+app.ConfigureHstsAndRedirection(app.Configuration);
+
+app.UseRouting();
+app.UseAuthz();
+
+app.MapControllers();
+app.Run();
 ```
 
-## Common operations
+`ConfigureHstsAndRedirection()` adds HSTS and HTTPS redirection in every defined environment except `Local` and `Test`. It configures middleware only: certificate binding, forwarded headers, proxy behavior, HSTS duration, and HTTPS ports still come from the host and ASP.NET Core configuration. Configure trusted proxy headers before redirection when TLS terminates upstream, or redirects can target the wrong scheme/port.
 
-- `ConfigureHstsAndRedirection()` - Configures HTTP Strict Transport Security (HSTS) and HTTPS redirection for non-local, non-test environments.
-- `UseAuthz()` - Adds authentication and authorization middleware to the request pipeline.
-- `AddDeveloperExceptionPage()` - Conditionally adds the ASP.NET Core Developer Exception Page middleware based on configuration. Checks the `DeveloperExceptionPage` configuration key.
+`UseAuthz()` calls `UseAuthentication()` and then `UseAuthorization()`. Register the corresponding services and schemes separately. Place it after routing and before endpoints that depend on authorization metadata. Calling the helper does not require authentication globally; endpoint policies and fallback policies determine access.
+
+`AddDeveloperExceptionPage()` adds the developer exception page only when `DeveloperExceptionPage` is `true` and `Environment` is `Local` or `Development`. The flag is ignored in `Test`, `E2E`, `Staging`, and `Production` to prevent detailed exception data from being exposed. Configure a production-safe exception handler separately.
