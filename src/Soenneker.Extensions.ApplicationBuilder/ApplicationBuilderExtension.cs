@@ -21,7 +21,7 @@ public static class ApplicationBuilderExtension
     /// </remarks>
     public static void ConfigureHstsAndRedirection(this IApplicationBuilder app, IConfiguration configuration)
     {
-        DeployEnvironment deployEnvironment = DeployEnvironment.FromValue(configuration.GetValueStrict<string>("Environment"));
+        DeployEnvironment deployEnvironment = DeployEnvironment.FromValue(configuration.GetStringStrict("Environment"));
 
         if (deployEnvironment == DeployEnvironment.Local || deployEnvironment == DeployEnvironment.Test)
             return;
@@ -56,7 +56,7 @@ public static class ApplicationBuilderExtension
         if (!enabled)
             return;
 
-        DeployEnvironment deployEnvironment = DeployEnvironment.FromValue(configuration.GetValueStrict<string>("Environment"));
+        DeployEnvironment deployEnvironment = DeployEnvironment.FromValue(configuration.GetStringStrict("Environment"));
 
         if (deployEnvironment == DeployEnvironment.Local || deployEnvironment == DeployEnvironment.Development)
             app.UseDeveloperExceptionPage();
